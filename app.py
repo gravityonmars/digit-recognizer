@@ -8,10 +8,10 @@ st.title("Number Guessing ML App")
 loaded = joblib.load("model.pkl")
 
 if isinstance(loaded, tuple):
-  model = loaded[0]
-
+  model, scaler = loaded
 else:
   model = loaded
+  scaler = None
 
 uploaded_file = st.file_uploader(
     "Upload a number image", type=["png", "jpg", "jpeg"]
@@ -29,6 +29,9 @@ if uploaded_file is not None:
       img_array = 255 - img_array
 
     img_array = img_array.reshape(1, -1)
+
+    if scaler is not None:
+      img_array = scaler.transform(img_array)
 
     prediction = model.predict(img_array)
     st.success(f"Predicted Number: {prediction[0]}")
